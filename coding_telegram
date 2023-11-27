@@ -1,0 +1,54 @@
+from telegram import update
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+import random
+
+# Function to handle the /start command
+def start(update, context):
+    update.message.reply_text("Welcome to Rock-Paper-Scissors! Type /play to start.")
+
+# Function to handle the /play command
+def play(update, context):
+    update.message.reply_text("Choose: Rock, Paper, or Scissors!")
+
+# Function to handle the user's choice
+def user_choice(update, context):
+    user_input = update.message.text.lower()
+    choices = ['rock', 'paper', 'scissors']
+    
+    if user_input in choices:
+        bot_choice = random.choice(choices)
+        
+        update.message.reply_text(f"You chose: {user_input.capitalize()}.\nBot chose: {bot_choice.capitalize()}.")
+        
+        # Determine the winner
+        if user_input == bot_choice:
+            update.message.reply_text("It's a tie!")
+        elif (user_input == 'rock' and bot_choice == 'scissors') or \
+             (user_input == 'paper' and bot_choice == 'rock') or \
+             (user_input == 'scissors' and bot_choice == 'paper'):
+            update.message.reply_text("You win!")
+        else:
+            update.message.reply_text("Bot wins!")
+    else:
+        update.message.reply_text("Invalid choice! Please choose: Rock, Paper, or Scissors.")
+
+def main():
+    # Set up the updater with your bot's token
+    updater = Updater("6956465598:AAEp0m9PjBUR4Mw_4zYB1eCrFoJbe2yFJXc", use_context=True)
+
+    # Get the dispatcher to register handlers
+    dp = updater.dispatcher
+
+    # Add handlers for commands and messages
+    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(CommandHandler("play", play))
+    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, user_choice))
+
+    # Start the bot
+    updater.start_polling()
+
+    # Run the bot until you press Ctrl-C
+    updater.idle()
+
+if __name__ == '__main__':
+    main()
